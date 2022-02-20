@@ -1,0 +1,117 @@
+Title: step by step guide how to create this web site
+Date: 2022-02-20
+
+5 - 1 Intro Personal Portfolio
+
+5 - 2 New Project and Apps
+django-admin startproject personal_portfolio
+change folder name from personal_portfolio into personal_portfolio-project (this is because there is another internal folder called personal_portfolio inside so to distinguish them)
+cd personal_portfolio-project
+python manage.py startapp blog
+python manage.py startapp portfolio
+at settings.py add at INSTALLED_APPS 'blog', 'portfolio', apps
+python manage.py runserver - to check if everything is running, rocket icon shall appear
+
+5 - 3 Models
+(in data base world classes are tables and objects are rows inside data base)
+open models.py from portfolio folder
+-google django model fields reference, to have different types of field listed
+class Project(models.Model):
+    title = models.CharField(max_length=100)
+    description = models.CharField(max_length=250)
+    image = models.ImageField(upload_to='portfolio/images/')
+    url = models.URLField(blank=True)     blank can be added anywhere, makes link optional, default False
+ctrl+c 
+install pip install pillow
+python manage.py runserver - to check if everything is running, migrations 17 
+ctrl+c 
+python manage.py migrate
+ctrl+c 
+python manage.py makemigrations, to see there are any migrate to do
+python manage.py runserver - to check if everything is running, migrations 1 
+ctrl+c 
+python manage.py migrate
+python manage.py runserver - no to migrate comment on cmd
+(if you do changes in the models 1. save models.py, 2.makemigrations, 3.migrate)
+
+5 - 4 Admin and Images
+ctrl+c 
+python manage.py createsuperuser
+(if required to change password: python manage.py changepassword user (exp. janwas) )
+(if required to change password: python manage.py createsuperuser (exp. admin) )
+open portfolio/admin.py
+    from django.contrib import admin
+
+    # Register your models here.
+    from .models import Project
+
+    admin.site.register(Project)
+
+add project at admin site
+delete portfolio/images folder (we will add media folder at upper level between blog and personal_portfolio folder)
+
+from setting.py DATA_BASE, add BASE_DIR / 'media'
+reupload image at admin site in particular project, if image was uploaded previously
+
+in url.py of personal_portfolio add following: 
+    from django.conf.urls.static import static
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+in setting.py add MEDIA_URL = '/media/'
+in url.py of personal_portfolio add following:
+    from django.conf import settings
+( this goes from django documantation media images)
+
+5 - 5 Displaying Objects
+(because added url in personal_portfolio with different erl no racket)
+to add home page in porfolio (possible as well to add at )
+1. at personal_portfolio url, add :
+    from portfolio import views.py
+        path('', views.home, name='home'),
+2. at portfolio views.py, add :
+    from .models import Project
+    def home(request):
+        projects = Project.objects.all()
+        return render(request, 'portfolio/home.html', {'projects': projects})
+3. create home.html at porfolio/templates/portfolio folder
+
+here is good description how to create home.html page, what's the content of this page
+
+5 - 6 Another Set Of URLs
+cool technic
+
+5 - 7 Blog Model
+chellenge
+
+
+5 - 11 Polish
+chellenge - add link on home page to all_blogs page
+<a href="{% url 'blog:all_blogs' %}">Blog</a>     (strange but following link also working!):<a href="{{ '/blog' }}">Blog</a>
+to show on how many blogs were written add <h2>JanaWasa has written {{ blogs.count }} blogs</h2>
+, need to remove limiting number of blogs on page from blogs = Blog.objects.order_by('-date')[:5] into blogs = Blog.objects.order_by('-date')
+
+google django template date format
+was: <h5>{{ blog.date }}</h5> change into another date format: <h5>{{ blog.date|date:'d M Y'|upper }}</h5>
+
+to reduce number of characters being displayed at all_blogs of blog description use this:
+from <p>{{ blog.description }}</p> into <p>{{ blog.description|truncatechars:100 }}</p>
+
+to remove html tags:
+from <p>{{ blog.description|truncatechars:100 }}</p> into <p>{{ blog.description|striptags|truncatechars:100 }}</p>
+
+add following def to class of models.py in portfolio and blog folders to change title of project titles in admin site
+    def __str__(self):
+        return self.title
+
+5 - 12 Extending Base Templates
+bootstrap.com    get started   starter template copy
+bootstrap.com    nav bar       template
+
+templates with save time in creating of pages. you do it once only
+
+5 - 13 Bootstrap
+for blog google:     lorem  ipsum p tag- this is a fake language so page will look as there is something there
+how to change sheet title in browser!
+did not work static files with icon in sheet of browser
+google fonts
+I did not downloaded templates from Nick
+navbar bars are not linked!
